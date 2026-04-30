@@ -136,8 +136,8 @@ body {
 
 /* SUMMARY STATS - now clickable */
 .summary {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  display: flex;
+  justify-content: center;
   gap: 12px;
   margin-bottom: 28px;
 }
@@ -147,7 +147,9 @@ body {
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 16px 18px;
-  text-align: left;
+  width: 240px;
+  flex-shrink: 0;
+  text-align: center;
   font-family: inherit;
   cursor: pointer;
   transition: transform 0.12s, box-shadow 0.12s, border-color 0.12s;
@@ -598,18 +600,14 @@ tbody tr.contacted .student-name { text-decoration: line-through; text-decoratio
 
 
 /* OVERVIEW HEADLINE */
-.overview-headline {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-  margin-bottom: 28px;
-}
+.overview-headline { display: flex; justify-content: center; gap: 12px; margin-bottom: 28px; }
 .headline-card {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 18px 20px;
   text-align: center;
+  flex: 0 1 240px;
 }
 .headline-value {
   font-size: 36px;
@@ -661,76 +659,41 @@ tbody tr.contacted .student-name { text-decoration: line-through; text-decoratio
   background: var(--surface-alt);
 }
 .rw-seg { height: 100%; transition: width 0.3s ease; }
-.rw-seg.both    { background: var(--green); }
-.rw-seg.reading { background: #3b82f6; }
-.rw-seg.writing { background: #a855f7; }
-.rw-seg.neither { background: var(--red); }
 
-.rw-legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 14px;
-}
-.rw-legend-item {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 12px;
-  color: var(--text-soft);
-}
-.rw-dot {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-.rw-dot.both    { background: var(--green); }
-.rw-dot.reading { background: #3b82f6; }
-.rw-dot.writing { background: #a855f7; }
-.rw-dot.neither { background: var(--red); }
+
+
+
+
+
+
+
+
+
+
+
 .rw-legend-item strong { color: var(--text); font-weight: 600; }
 
 /* ETHNIC BREAKDOWN */
 .ethnic-section { margin-bottom: 28px; }
 .ethnic-section h3 { font-size: 15px; font-weight: 600; margin-bottom: 14px; }
+.ethnic-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+.ethnic-grid .rw-card { width: 220px; flex-shrink: 0; flex-grow: 0; }
 
-.ethnic-table-wrap {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  overflow: hidden;
-}
-.ethnic-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-.ethnic-table th {
-  text-align: left;
-  padding: 10px 14px;
-  font-size: 12px;
-  color: var(--text-soft);
-  font-weight: 600;
-  border-bottom: 1px solid var(--border);
-  background: var(--surface-alt);
-  white-space: nowrap;
-}
-.ethnic-table td {
-  padding: 10px 14px;
-  border-bottom: 1px solid var(--border);
-  vertical-align: middle;
-}
-.ethnic-table tbody tr:last-child td { border-bottom: none; }
-.ethnic-table tbody tr:hover { background: var(--surface-alt); }
-.ethnic-name { font-weight: 500; }
-.ethnic-bar-wrap { display: flex; align-items: center; gap: 8px; }
-.ethnic-bar-bg {
-  flex: 1; height: 6px;
-  background: var(--surface-alt);
-  border-radius: 3px; overflow: hidden;
-  min-width: 60px;
-}
-.ethnic-bar-fill { height: 100%; border-radius: 3px; }
-.ethnic-bar-fill.good { background: var(--green); }
-.ethnic-bar-fill.mid  { background: var(--amber); }
-.ethnic-bar-fill.low  { background: var(--red);   }
-.ethnic-pct { font-size: 12px; font-weight: 600; min-width: 36px; text-align: right; }
-.ethnic-n { font-size: 12px; color: var(--text-mute); }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @media (max-width: 768px) {
   .overview-headline { grid-template-columns: repeat(2, 1fr); }
@@ -1228,6 +1191,69 @@ tbody tr.contacted .student-name { text-decoration: line-through; text-decoratio
 .col-house   { width: 115px; }
 .col-lit     { width: 82px;  text-align: center; }
 .col-num     { width: 82px;  text-align: center; }
+
+/* Pass rate ring charts */
+.pass-rate-banner {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.pass-rate-card {
+  flex: 1;
+  border-radius: 14px;
+  padding: 28px 32px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+.pass-rate-ring-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+.pass-rate-ring-wrap svg { display: block; }
+.pass-rate-ring-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+.pass-rate-ring-pct {
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+}
+.pass-rate-ring-sym {
+  font-size: 20px;
+  font-weight: 700;
+  opacity: 0.8;
+}
+.pass-rate-info { flex: 1; min-width: 0; }
+.pass-rate-title {
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: var(--text);
+}
+.pass-rate-count {
+  font-size: 13px;
+  color: var(--text-mute);
+  margin-bottom: 20px;
+}
+.pr-year-rows { display: flex; flex-direction: column; gap: 8px; }
+.pr-year-row { display: flex; align-items: center; gap: 10px; font-size: 12px; }
+.pr-year-lbl { width: 44px; color: var(--text-soft); font-weight: 500; flex-shrink: 0; }
+.pr-bar-track { flex: 1; height: 6px; background: var(--border); border-radius: 99px; overflow: hidden; }
+.pr-bar-fill  { height: 100%; border-radius: 99px; transition: width 0.6s ease; }
+.pr-year-val  { width: 36px; text-align: right; color: var(--text-soft); font-weight: 600; flex-shrink: 0; }
 </style>
 </head>
 <body>
@@ -1253,7 +1279,7 @@ tbody tr.contacted .student-name { text-decoration: line-through; text-decoratio
       School Overview
     </button>
     <button class="tab" data-view="action" role="tab">
-      Year 13 — Priority<span class="tab-count" id="actionCount">0</span>
+      Year 13<span class="tab-count" id="actionCount">0</span>
     </button>
     <button class="tab" data-view="yr12" role="tab">
       Year 12<span class="tab-count" id="yr12Count">0</span>
@@ -1644,7 +1670,6 @@ function renderActionSummary() {
   const yr13MissingNum = yr13.filter(s => s['L1 Num'] === 'N').length;
   const yr13MissingEither = yr13.filter(s => hasGaps(s)).length;
   const yr13MissingEitherKeys = yr13.filter(s => hasGaps(s)).map(studentKey);
-  const yr13Contacted = yr13MissingEitherKeys.filter(k => contacted.has(k)).length;
 
   const cards = [
     {
@@ -1670,14 +1695,6 @@ function renderActionSummary() {
       class: yr13MissingEither > 0 ? 'urgent' : 'success',
       gapFilter: 'any',
       disabled: yr13MissingEither === 0
-    },
-    {
-      label: 'Contacted',
-      value: yr13Contacted,
-      detail: `${yr13MissingEither - yr13Contacted} still to follow up`,
-      class: '',
-      gapFilter: '',
-      disabled: true
     }
   ];
 
@@ -1773,7 +1790,6 @@ function renderActionGroups() {
         <span class="group-badge urgent">Urgent</span>
         <span class="group-count">${students.length} student${students.length === 1 ? '' : 's'}</span>
       </div>
-      <div class="group-description">Final-year students who have not yet met requirements.</div>
       <div class="table-wrap">
         <table>
           <colgroup><col class="col-student"><col class="col-status"><col class="col-house"></colgroup>
@@ -1857,13 +1873,11 @@ function renderYr12Summary() {
   const yr12MissingLit = yr12.filter(s => s['L1 Lit'] === 'N').length;
   const yr12MissingNum = yr12.filter(s => s['L1 Num'] === 'N').length;
   const yr12MissingEither = yr12.filter(s => hasGaps(s)).length;
-  const yr12Contacted = yr12.filter(s => hasGaps(s) && isContacted(s)).length;
 
   const cards = [
     { label: 'Missing Literacy',  value: yr12MissingLit,    detail: yr12MissingLit  === 0 ? 'All have Literacy ✓'  : 'Click to filter', cls: yr12MissingLit  > 0 ? 'warn' : 'success', filter: 'lit',  disabled: yr12MissingLit  === 0 },
     { label: 'Missing Numeracy',  value: yr12MissingNum,    detail: yr12MissingNum  === 0 ? 'All have Numeracy ✓'  : 'Click to filter', cls: yr12MissingNum  > 0 ? 'warn' : 'success', filter: 'num',  disabled: yr12MissingNum  === 0 },
     { label: 'Missing either',    value: yr12MissingEither, detail: `${yr12Total - yr12MissingEither} of ${yr12Total} fully met`, cls: yr12MissingEither > 0 ? 'warn' : 'success', filter: 'any',  disabled: yr12MissingEither === 0 },
-    { label: 'Contacted',         value: yr12Contacted,     detail: `${yr12MissingEither - yr12Contacted} still to follow up`, cls: '', filter: '', disabled: true },
   ];
 
   $('#yr12Summary').innerHTML = cards.map(c => `
@@ -1907,13 +1921,11 @@ function renderYr11Summary() {
   const yr11MissingLit = yr11.filter(s => s['L1 Lit'] === 'N').length;
   const yr11MissingNum = yr11.filter(s => s['L1 Num'] === 'N').length;
   const yr11MissingEither = yr11.filter(s => hasGaps(s)).length;
-  const yr11Contacted = yr11.filter(s => hasGaps(s) && isContacted(s)).length;
 
   const cards = [
     { label: 'Missing Literacy',  value: yr11MissingLit,    detail: yr11MissingLit  === 0 ? 'All have Literacy ✓'  : 'Click to filter', cls: yr11MissingLit  > 0 ? 'warn' : 'success', filter: 'lit',  disabled: yr11MissingLit  === 0 },
     { label: 'Missing Numeracy',  value: yr11MissingNum,    detail: yr11MissingNum  === 0 ? 'All have Numeracy ✓'  : 'Click to filter', cls: yr11MissingNum  > 0 ? 'warn' : 'success', filter: 'num',  disabled: yr11MissingNum  === 0 },
     { label: 'Missing either',    value: yr11MissingEither, detail: `${yr11Total - yr11MissingEither} of ${yr11Total} fully met`, cls: yr11MissingEither > 0 ? 'warn' : 'success', filter: 'any',  disabled: yr11MissingEither === 0 },
-    { label: 'Contacted',         value: yr11Contacted,     detail: `${yr11MissingEither - yr11Contacted} still to follow up`, cls: '', filter: '', disabled: true },
   ];
 
   $('#yr11Summary').innerHTML = cards.map(c => `
@@ -2139,7 +2151,72 @@ function renderOverview() {
   const total = all.length;
   const fullyMet = all.filter(s => !hasGaps(s)).length;
   const hasGap   = all.filter(s =>  hasGaps(s)).length;
-  const contactedCount = all.filter(s => hasGaps(s) && isContacted(s)).length;
+  const litMet   = all.filter(s => s['L1 Lit'] === 'Y').length;
+  const numMet   = all.filter(s => s['L1 Num'] === 'Y').length;
+  const litPct   = total > 0 ? Math.round((litMet / total) * 100) : 0;
+  const numPct   = total > 0 ? Math.round((numMet / total) * 100) : 0;
+
+  // Per-year breakdown
+  const yrStats = ['11','12','13'].map(yr => {
+    const c = all.filter(s => s.Year === yr);
+    const n = c.length;
+    const l = n ? Math.round(c.filter(s => s['L1 Lit'] === 'Y').length / n * 100) : 0;
+    const nm = n ? Math.round(c.filter(s => s['L1 Num'] === 'Y').length / n * 100) : 0;
+    return { yr, l, nm };
+  });
+
+  function ringChart(pct, colour) {
+    const r = 52, cx = 60, cy = 60, stroke = 10;
+    const circ = 2 * Math.PI * r;
+    const offset = circ * (1 - pct / 100);
+    return `<svg width="120" height="120" viewBox="0 0 120 120">
+      <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--border)" stroke-width="${stroke}"/>
+      <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${colour}" stroke-width="${stroke}"
+        stroke-dasharray="${circ.toFixed(1)}" stroke-dashoffset="${offset.toFixed(1)}"
+        stroke-linecap="round" transform="rotate(-90 ${cx} ${cy})"/>
+    </svg>`;
+  }
+
+  function yearRows(key, colour) {
+    return yrStats.map(s => {
+      const pct = key === 'l' ? s.l : s.nm;
+      return `<div class="pr-year-row">
+        <span class="pr-year-lbl">Year ${s.yr}</span>
+        <div class="pr-bar-track"><div class="pr-bar-fill" style="width:${pct}%;background:${colour}"></div></div>
+        <span class="pr-year-val">${pct}%</span>
+      </div>`;
+    }).join('');
+  }
+
+  const passRateHtml = `
+    <div class="pass-rate-banner">
+      <div class="pass-rate-card">
+        <div class="pass-rate-ring-wrap">
+          ${ringChart(litPct, '#1d4ed8')}
+          <div class="pass-rate-ring-center">
+            <span class="pass-rate-ring-pct" style="color:#1d4ed8">${litPct}<span class="pass-rate-ring-sym">%</span></span>
+          </div>
+        </div>
+        <div class="pass-rate-info">
+          <div class="pass-rate-title">Literacy</div>
+          <div class="pass-rate-count">${litMet} of ${total} students</div>
+          <div class="pr-year-rows">${yearRows('l', '#1d4ed8')}</div>
+        </div>
+      </div>
+      <div class="pass-rate-card">
+        <div class="pass-rate-ring-wrap">
+          ${ringChart(numPct, '#15803d')}
+          <div class="pass-rate-ring-center">
+            <span class="pass-rate-ring-pct" style="color:#15803d">${numPct}<span class="pass-rate-ring-sym">%</span></span>
+          </div>
+        </div>
+        <div class="pass-rate-info">
+          <div class="pass-rate-title">Numeracy</div>
+          <div class="pass-rate-count">${numMet} of ${total} students</div>
+          <div class="pr-year-rows">${yearRows('nm', '#15803d')}</div>
+        </div>
+      </div>
+    </div>`;
 
   // ── 1. Headline banner ──────────────────────────────────────────────────
   const headlineHtml = `
@@ -2154,10 +2231,6 @@ function renderOverview() {
     <div class="headline-card bad">
       <div class="headline-value">${hasGap}</div>
       <div class="headline-label">Have gaps</div>
-    </div>
-    <div class="headline-card blue">
-      <div class="headline-value">${contactedCount}</div>
-      <div class="headline-label">Contacted</div>
     </div>`;
 
   // ── 2. Reading / Writing breakdown per year ─────────────────────────────
@@ -2166,52 +2239,37 @@ function renderOverview() {
     const cohort = STUDENT_DATA.filter(s => s.Year === yr);
     const n = cohort.length;
     if (n === 0) return '';
-    const litStudents = cohort.filter(s => s['L1 Lit'] === 'N');
-    const both    = litStudents.filter(s => s.L1LitRead !== 'Y' && s.L1LitWrite !== 'Y').length;
-    const rdOnly  = litStudents.filter(s => s.L1LitRead === 'Y' && s.L1LitWrite !== 'Y').length;
-    const wrOnly  = litStudents.filter(s => s.L1LitRead !== 'Y' && s.L1LitWrite === 'Y').length;
-    const litMet  = cohort.filter(s => s['L1 Lit'] === 'Y').length;
-    const numMet  = cohort.filter(s => s['L1 Num'] === 'Y').length;
+    const rdMet  = cohort.filter(s => s.L1LitRead === 'Y').length;
+    const wrMet  = cohort.filter(s => s.L1LitWrite === 'Y').length;
+    const numMet = cohort.filter(s => s['L1 Num'] === 'Y').length;
     const pct = v => Math.round((v / n) * 100);
-    const barCls = p => p < 60 ? 'low' : p < 85 ? 'mid' : 'good';
-    return `
-      <div class="rw-card">
-        <div class="rw-card-header">
-          <div class="rw-card-title">Year ${yr}</div>
-          <div class="rw-card-sub">${n} students</div>
+    const barCol = p => p < 60 ? 'var(--red)' : p < 85 ? 'var(--amber)' : 'var(--green)';
+    const bar = (label, val) => {
+      const p = pct(val);
+      return `<div style="margin-bottom:10px;">
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-soft);margin-bottom:4px;">
+          <span>${label}</span><span><span style="opacity:0.6">${val}/${n}&nbsp;&nbsp;</span><span style="font-weight:600;color:${barCol(p)}">${p}%</span></span>
         </div>
-        <div style="margin-bottom:10px;">
-          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-soft);margin-bottom:4px;">
-            <span>Literacy</span><span>${litMet}/${n} · ${pct(litMet)}%</span>
-          </div>
-          <div class="rw-stacked-bar">
-            <div class="rw-seg both"    style="width:${pct(litMet)}%"  title="${litMet} fully met"></div>
-            <div class="rw-seg reading" style="width:${pct(rdOnly)}%"  title="${rdOnly} have Reading only"></div>
-            <div class="rw-seg writing" style="width:${pct(wrOnly)}%"  title="${wrOnly} have Writing only"></div>
-            <div class="rw-seg neither" style="width:${pct(both)}%"    title="${both} have neither"></div>
-          </div>
-          <div class="rw-legend">
-            <div class="rw-legend-item"><div class="rw-dot both"></div>    <span>Both&nbsp;<strong>${litMet}</strong></span></div>
-            <div class="rw-legend-item"><div class="rw-dot reading"></div> <span>Reading only&nbsp;<strong>${rdOnly}</strong></span></div>
-            <div class="rw-legend-item"><div class="rw-dot writing"></div> <span>Writing only&nbsp;<strong>${wrOnly}</strong></span></div>
-            <div class="rw-legend-item"><div class="rw-dot neither"></div> <span>Neither&nbsp;<strong>${both}</strong></span></div>
-          </div>
-        </div>
-        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);">
-          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-soft);margin-bottom:4px;">
-            <span>Numeracy</span><span>${numMet}/${n} · ${pct(numMet)}%</span>
-          </div>
-          <div class="metric-bar" style="width:100%;height:8px;">
-            <div class="metric-bar-fill ${barCls(pct(numMet))}" style="width:${pct(numMet)}%;height:100%;"></div>
-          </div>
+        <div class="rw-stacked-bar">
+          <div class="rw-seg both" style="width:${p}%;background:${barCol(p)}"></div>
         </div>
       </div>`;
+    };
+    return `<div class="rw-card">
+      <div class="rw-card-header">
+        <div class="rw-card-title">Year ${yr}</div>
+        <div class="rw-card-sub">${n} students</div>
+      </div>
+      ${bar('Reading', rdMet)}
+      ${bar('Writing', wrMet)}
+      ${bar('Numeracy', numMet)}
+    </div>`;
   }).join('');
 
   // ── 3. Ethnic breakdown ─────────────────────────────────────────────────
   const ETHNIC_LABELS = {
-    'MAORI':'Māori','PASIFIKA':'Pasifika','SE ASIAN':'SE Asian',
-    'OTH ASIAN':'Other Asian','PAKEHA':'Pākehā',
+    'MAORI':'Maaori','PASIFIKA':'Pasifika','SE ASIAN':'SE Asian',
+    'OTH ASIAN':'Other Asian','PAKEHA':'NZ European',
     'OTH EUROP':'Other European','MELAA':'MELAA','OTHER':'Other'
   };
   const ethnicGroups = [...new Set(all.map(s => s.Ethnic).filter(Boolean))];
@@ -2229,49 +2287,47 @@ function renderOverview() {
     return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
   });
 
-  const barCls = p => p < 60 ? 'low' : p < 85 ? 'mid' : 'good';
-  const ethnicRows = ethnicData.map(({e, n, litMet, numMet}) => {
-    const lp = Math.round((litMet/n)*100);
-    const np = Math.round((numMet/n)*100);
-    return `<tr>
-      <td class="ethnic-name">${ETHNIC_LABELS[e] || e}</td>
-      <td class="ethnic-n">${n}</td>
-      <td>
-        <div class="ethnic-bar-wrap">
-          <div class="ethnic-bar-bg"><div class="ethnic-bar-fill ${barCls(lp)}" style="width:${lp}%"></div></div>
-          <div class="ethnic-pct" style="color:${lp<60?'var(--red)':lp<85?'var(--amber)':'var(--green)'}">${lp}%</div>
+  const ethnicCards = ethnicData.map(({e, n, litMet, numMet}) => {
+    const lp = Math.round((litMet / n) * 100);
+    const np = Math.round((numMet / n) * 100);
+    const barCol = p => p < 60 ? 'var(--red)' : p < 85 ? 'var(--amber)' : 'var(--green)';
+    return `<div class="rw-card">
+      <div class="rw-card-header">
+        <div class="rw-card-title">${ETHNIC_LABELS[e] || e}</div>
+        <div class="rw-card-sub">${n} students</div>
+      </div>
+      <div style="margin-bottom:10px;">
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-soft);margin-bottom:4px;">
+          <span>Literacy</span><span style="font-weight:600;color:${barCol(lp)}">${lp}%</span>
         </div>
-      </td>
-      <td>
-        <div class="ethnic-bar-wrap">
-          <div class="ethnic-bar-bg"><div class="ethnic-bar-fill ${barCls(np)}" style="width:${np}%"></div></div>
-          <div class="ethnic-pct" style="color:${np<60?'var(--red)':np<85?'var(--amber)':'var(--green)'}">${np}%</div>
+        <div class="rw-stacked-bar">
+          <div class="rw-seg both" style="width:${lp}%;background:${barCol(lp)}"></div>
         </div>
-      </td>
-    </tr>`;
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-soft);margin-bottom:4px;">
+          <span>Numeracy</span><span style="font-weight:600;color:${barCol(np)}">${np}%</span>
+        </div>
+        <div class="rw-stacked-bar">
+          <div class="rw-seg both" style="width:${np}%;background:${barCol(np)}"></div>
+        </div>
+      </div>
+    </div>`;
   }).join('');
 
-  const ethnicHtml = `
-    <div class="ethnic-table-wrap">
-      <table class="ethnic-table">
-        <thead><tr>
-          <th>Group</th><th>Students</th>
-          <th>Literacy met</th><th>Numeracy met</th>
-        </tr></thead>
-        <tbody>${ethnicRows}</tbody>
-      </table>
-    </div>`;
+  const ethnicHtml = `<div class="ethnic-grid">${ethnicCards}</div>`;
 
   // ── Assemble ────────────────────────────────────────────────────────────
   $('#overviewGrid').innerHTML = `
     <div style="grid-column: 1 / -1;">
-      <div class="overview-headline">${headlineHtml}</div>
+      ${passRateHtml}
+      <div style="display:flex;justify-content:center;gap:12px;margin-bottom:28px;">${headlineHtml}</div>
       <div class="rw-section">
-        <h3>Literacy breakdown by year group</h3>
+        <h3>Year Breakdown</h3>
         <div class="rw-grid">${rwHtml}</div>
       </div>
       <div class="ethnic-section">
-        <h3>Literacy &amp; Numeracy by ethnic group</h3>
+        <h3>Ethnicity Breakdown</h3>
         ${ethnicHtml}
       </div>
     </div>`;
