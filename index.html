@@ -1657,7 +1657,8 @@ const contacted = new Set(loadJSON(KEY_CONTACTED, []));
 let notes = loadJSON(KEY_NOTES, {});
 let teacher = loadJSON(KEY_TEACHER, { name: '', subject: '' });
 let pendingTutorials = loadJSON(KEY_PENDING, []);
-const sheetsUrl = 'https://script.google.com/macros/s/AKfycbz2Rued0CxuHnHaMuQkLoyKJvCP1nUisGQ3e-3EXouIlYjpsTZElLX_jsNhg_hmvoGD/exec';
+const SUPA_URL = 'https://hovcfsgnahxkkhdjlrgf.supabase.co';
+const SUPA_KEY = 'sb_publishable_KzuQVvMt-zvs2gB3rwXvFg_qYyT81pX';
 
 function persistContacted() { saveJSON(KEY_CONTACTED, [...contacted]); }
 function persistNotes() { saveJSON(KEY_NOTES, notes); }
@@ -2723,37 +2724,55 @@ function resolveTutorial(id, outcome) {
 }
 
 function postToSheets(data) {
-  if (!sheetsUrl) return;
-  fetch(sheetsUrl, {
+  fetch(`${SUPA_URL}/rest/v1/log_entries`, {
     method: 'POST',
-    mode: 'no-cors',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
+    headers: { ...supaHeaders, 'Prefer': 'return=minimal' },
+    body: JSON.stringify({
+      type: data.type,
+      student: data.student,
+      year: String(data.year),
+      form: data.form,
+      teacher: data.teacher,
+      subject: data.subject,
+      target: data.target,
+      actions: data.actions,
+      notes: data.notes
+    })
   }).catch(() => {}); // fail silently — don't disrupt the UI
 }
 
-/* === SHEETS SYNC === */
+/* === SUPABASE SYNC === */
+const supaHeaders = {
+  'apikey': SUPA_KEY,
+  'Authorization': 'Bearer ' + SUPA_KEY,
+  'Content-Type': 'application/json'
+};
+
 async function loadNotesFromSheets() {
   try {
-    const res = await fetch(sheetsUrl);
+    const res = await fetch(
+      `${SUPA_URL}/rest/v1/log_entries?select=*&order=created_at.asc`,
+      { headers: supaHeaders }
+    );
     const rows = await res.json();
+    if (!Array.isArray(rows)) throw new Error('Unexpected response');
     notes = {};
     rows.forEach(row => {
-      if (!row.Student || !row.Year || !row.Form) return;
-      const key = `${row.Student}|${row.Year}|${row.Form}`;
+      if (!row.student || !row.year || !row.form) return;
+      const key = `${row.student}|${row.year}|${row.form}`;
       if (!notes[key]) notes[key] = [];
       notes[key].push({
-        id: 'sheet_' + new Date(row.Timestamp).getTime() + '_' + Math.random().toString(36).slice(2, 5),
-        teacher: row.Teacher || '',
-        subject: row.Subject || '',
-        target: row.Target || '',
-        actions: row.Actions ? row.Actions.split(', ').filter(Boolean) : [],
-        text: row.Notes || '',
-        timestamp: row.Timestamp ? new Date(row.Timestamp).getTime() : Date.now()
+        id: 'sb_' + row.id,
+        teacher: row.teacher || '',
+        subject: row.subject || '',
+        target: row.target || '',
+        actions: row.actions ? row.actions.split(', ').filter(Boolean) : [],
+        text: row.notes || '',
+        timestamp: row.created_at ? new Date(row.created_at).getTime() : Date.now()
       });
     });
   } catch(e) {
-    console.warn('Could not load entries from sheet — using local data.', e);
+    console.warn('Could not load entries from Supabase — using local data.', e);
   }
 }
 
