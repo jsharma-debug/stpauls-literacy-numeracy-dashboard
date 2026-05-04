@@ -1254,6 +1254,65 @@ tbody tr.contacted .student-name { text-decoration: line-through; text-decoratio
 .pr-bar-track { flex: 1; height: 6px; background: var(--border); border-radius: 99px; overflow: hidden; }
 .pr-bar-fill  { height: 100%; border-radius: 99px; transition: width 0.6s ease; }
 .pr-year-val  { width: 36px; text-align: right; color: var(--text-soft); font-weight: 600; flex-shrink: 0; }
+
+/* PENDING TUTORIALS PANEL */
+.pending-panel {
+  background: var(--amber-bg-soft);
+  border: 1px solid #fde68a;
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+}
+.pending-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.pending-panel-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--amber);
+}
+.pending-count-badge {
+  display: inline-block;
+  padding: 1px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  background: #fcd34d;
+  color: #78350f;
+  border-radius: 10px;
+}
+.pending-list { display: flex; flex-direction: column; gap: 8px; }
+.pending-item {
+  background: #fff;
+  border: 1px solid #fde68a;
+  border-radius: 8px;
+  padding: 11px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.pending-item-info { flex: 1; min-width: 0; }
+.pending-student-name { font-weight: 600; font-size: 13px; color: var(--text); }
+.pending-meta { font-size: 12px; color: var(--text-soft); margin-top: 2px; }
+.pending-item-actions { display: flex; gap: 6px; flex-shrink: 0; }
+.btn-attended {
+  padding: 5px 12px; font-size: 12px; font-weight: 500;
+  background: var(--green-bg); color: var(--green);
+  border: 1px solid #86efac; border-radius: 6px;
+  cursor: pointer; font-family: inherit; transition: background 0.15s;
+}
+.btn-attended:hover { background: #bbf7d0; }
+.btn-no-show {
+  padding: 5px 12px; font-size: 12px; font-weight: 500;
+  background: var(--red-bg-soft); color: var(--red);
+  border: 1px solid #fca5a5; border-radius: 6px;
+  cursor: pointer; font-family: inherit; transition: background 0.15s;
+}
+.btn-no-show:hover { background: var(--red-bg); }
 </style>
 </head>
 <body>
@@ -1290,6 +1349,17 @@ tbody tr.contacted .student-name { text-decoration: line-through; text-decoratio
     <button class="tab" data-view="all" role="tab">
       All Students<span class="tab-count" id="allCount">0</span>
     </button>
+  </div>
+
+  <!-- ===== PENDING TUTORIALS PANEL ===== -->
+  <div id="pendingPanel" class="pending-panel" style="display:none;">
+    <div class="pending-panel-header">
+      <span>⏳</span>
+      <span class="pending-panel-title">Pending Tutorial Follow-ups</span>
+      <span class="pending-count-badge" id="pendingBadge">0</span>
+    </div>
+    <p style="font-size:12px;color:var(--text-soft);margin-bottom:10px;">These students were offered a tutorial — mark the outcome when you know it.</p>
+    <div class="pending-list" id="pendingList"></div>
   </div>
 
       <!-- ===== YEAR 13 PRIORITY VIEW ===== -->
@@ -1506,9 +1576,9 @@ tbody tr.contacted .student-name { text-decoration: line-through; text-decoratio
               <button type="button" class="quick-action-chip" data-action="Spoken to student">Spoken to student</button>
               <button type="button" class="quick-action-chip" data-action="Set work">Set work</button>
               <button type="button" class="quick-action-chip" data-action="Contacted parents">Contacted parents</button>
-              <button type="button" class="quick-action-chip" data-action="Referred to dean">Referred to dean</button>
-              <button type="button" class="quick-action-chip" data-action="Tutoring arranged">Tutoring arranged</button>
-              <button type="button" class="quick-action-chip" data-action="Assessed">Assessed</button>
+              <button type="button" class="quick-action-chip" data-action="Referred to Housemaster/LOC">Referred to Housemaster/LOC</button>
+              <button type="button" class="quick-action-chip" data-action="Tutorial offered">Tutorial offered</button>
+<button type="button" class="quick-action-chip" data-action="Assessed">Assessed</button>
               <button type="button" class="quick-action-chip" data-action="Other">Other</button>
             </div>
           </div>
@@ -1572,6 +1642,7 @@ const STUDENT_DATA = [{"Student":"Harlow ADAMS","Ethnic":"PAKEHA","Year":"12","F
 const KEY_CONTACTED = 'litnum_contacted_v1';
 const KEY_NOTES = 'litnum_notes_v1';
 const KEY_TEACHER = 'litnum_teacher_v1';
+const KEY_PENDING = 'litnum_pending_v1';
 
 function loadJSON(key, fallback) {
   try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; }
@@ -1585,10 +1656,13 @@ function saveJSON(key, value) {
 const contacted = new Set(loadJSON(KEY_CONTACTED, []));
 let notes = loadJSON(KEY_NOTES, {});
 let teacher = loadJSON(KEY_TEACHER, { name: '', subject: '' });
+let pendingTutorials = loadJSON(KEY_PENDING, []);
+const sheetsUrl = 'https://script.google.com/a/macros/stpauls.school.nz/s/AKfycbwr_ijCzOSFTQ0so0BpysSsHc8ZwEY3j3ZADq_XNE1kH31qUE0w6EiDn0HQ9YDSfNXp/exec';
 
 function persistContacted() { saveJSON(KEY_CONTACTED, [...contacted]); }
 function persistNotes() { saveJSON(KEY_NOTES, notes); }
 function persistTeacher() { saveJSON(KEY_TEACHER, teacher); }
+function persistPending() { saveJSON(KEY_PENDING, pendingTutorials); }
 
 const state = {
   currentView: 'overview',
@@ -2501,6 +2575,37 @@ function saveLogEntry() {
   });
   persistNotes();
 
+  // If "Tutorial offered" was selected, add a pending follow-up
+  if (actions.includes('Tutorial offered')) {
+    pendingTutorials.push({
+      id: 'p_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+      studentKey: key,
+      studentName: s.Student,
+      studentYear: s.Year,
+      studentForm: s.Form,
+      teacher: teacherName,
+      subject: teacherSubject,
+      target: target,
+      timestamp: Date.now()
+    });
+    persistPending();
+    renderPendingPanel();
+  }
+
+  // Post to Google Sheets if configured
+  postToSheets({
+    type: 'Log Entry',
+    student: s.Student,
+    year: s.Year,
+    form: s.Form,
+    teacher: teacherName,
+    subject: teacherSubject,
+    target: target || '',
+    actions: actions.join(', '),
+    notes: noteText,
+    timestamp: new Date().toISOString()
+  });
+
   state.formActions.clear();
   state.formTarget = null;
   $$('#quickActions .quick-action-chip').forEach(c => c.classList.remove('active'));
@@ -2535,6 +2640,97 @@ function saveTeacherSetup() {
   persistTeacher();
   renderTeacherPill();
   closeTeacherModal();
+}
+
+/* === PENDING TUTORIALS === */
+function renderPendingPanel() {
+  const panel = $('#pendingPanel');
+  const list = $('#pendingList');
+  const badge = $('#pendingBadge');
+  if (pendingTutorials.length === 0) {
+    panel.style.display = 'none';
+    return;
+  }
+  panel.style.display = '';
+  badge.textContent = pendingTutorials.length;
+  list.innerHTML = pendingTutorials.map(p => {
+    const when = formatDateTime(p.timestamp);
+    const subj = p.subject ? ` · ${escapeHtml(p.subject)}` : '';
+    return `
+      <div class="pending-item">
+        <div class="pending-item-info">
+          <div class="pending-student-name">${escapeHtml(p.studentName)}</div>
+          <div class="pending-meta">Year ${p.studentYear} · ${escapeHtml(p.studentForm)} · Offered by ${escapeHtml(p.teacher)}${subj} on ${when}</div>
+        </div>
+        <div class="pending-item-actions">
+          <button class="btn-attended" data-pid="${p.id}">✓ Attended</button>
+          <button class="btn-no-show" data-pid="${p.id}">✗ Did not attend</button>
+        </div>
+      </div>`;
+  }).join('');
+
+  $$('.btn-attended').forEach(btn => btn.addEventListener('click', () => resolveTutorial(btn.dataset.pid, 'Tutorial attended')));
+  $$('.btn-no-show').forEach(btn => btn.addEventListener('click', () => resolveTutorial(btn.dataset.pid, 'Tutorial - did not attend')));
+}
+
+function resolveTutorial(id, outcome) {
+  const p = pendingTutorials.find(x => x.id === id);
+  if (!p) return;
+
+  // Find the student object
+  const s = STUDENT_DATA.find(st => studentKey(st) === p.studentKey);
+
+  // Log the outcome as a new note entry
+  if (s) {
+    const key = p.studentKey;
+    if (!notes[key]) notes[key] = [];
+    notes[key].push({
+      id: 'n_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+      teacher: p.teacher,
+      subject: p.subject,
+      target: p.target,
+      actions: [outcome],
+      text: '',
+      timestamp: Date.now()
+    });
+    persistNotes();
+    // If the modal is open for this student, refresh history
+    if (state.modalStudent && studentKey(state.modalStudent) === key) {
+      renderNoteHistory(state.modalStudent);
+    }
+    renderActionGroups();
+    renderYr12Groups(); renderYr11Groups();
+    renderAllTable();
+
+    // Post outcome to Sheets
+    postToSheets({
+      type: 'Tutorial Outcome',
+      student: p.studentName,
+      year: p.studentYear,
+      form: p.studentForm,
+      teacher: p.teacher,
+      subject: p.subject || '',
+      target: p.target || '',
+      actions: outcome,
+      notes: '',
+      timestamp: new Date().toISOString()
+    });
+  }
+
+  // Remove from pending
+  pendingTutorials = pendingTutorials.filter(x => x.id !== id);
+  persistPending();
+  renderPendingPanel();
+}
+
+function postToSheets(data) {
+  if (!sheetsUrl) return;
+  fetch(sheetsUrl, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  }).catch(() => {}); // fail silently — don't disrupt the UI
 }
 
 /* === EVENTS === */
@@ -2646,6 +2842,7 @@ function init() {
   renderAllTable();
   renderOverview();
   updateTabCounts();
+  renderPendingPanel();
   wireEvents();
 
   if (!teacher.name && !teacher.subject) {
