@@ -1657,7 +1657,7 @@ const contacted = new Set(loadJSON(KEY_CONTACTED, []));
 let notes = loadJSON(KEY_NOTES, {});
 let teacher = loadJSON(KEY_TEACHER, { name: '', subject: '' });
 let pendingTutorials = loadJSON(KEY_PENDING, []);
-const sheetsUrl = 'https://script.google.com/a/macros/stpauls.school.nz/s/AKfycbwr_ijCzOSFTQ0so0BpysSsHc8ZwEY3j3ZADq_XNE1kH31qUE0w6EiDn0HQ9YDSfNXp/exec';
+const sheetsUrl = 'https://script.google.com/macros/s/AKfycbxU0B-qMfPBsOr0-VkDuztA3j8B-hmhD5oYdMpLjLQhJCR2Vw7Xx0ixFY01_tsBbMmk/exec';
 
 function persistContacted() { saveJSON(KEY_CONTACTED, [...contacted]); }
 function persistNotes() { saveJSON(KEY_NOTES, notes); }
