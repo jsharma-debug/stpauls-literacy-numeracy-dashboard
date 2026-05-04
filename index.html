@@ -1657,7 +1657,7 @@ const contacted = new Set(loadJSON(KEY_CONTACTED, []));
 let notes = loadJSON(KEY_NOTES, {});
 let teacher = loadJSON(KEY_TEACHER, { name: '', subject: '' });
 let pendingTutorials = loadJSON(KEY_PENDING, []);
-const sheetsUrl = 'https://script.google.com/macros/s/AKfycbxU0B-qMfPBsOr0-VkDuztA3j8B-hmhD5oYdMpLjLQhJCR2Vw7Xx0ixFY01_tsBbMmk/exec';
+const sheetsUrl = 'https://script.google.com/macros/s/AKfycbz2Rued0CxuHnHaMuQkLoyKJvCP1nUisGQ3e-3EXouIlYjpsTZElLX_jsNhg_hmvoGD/exec';
 
 function persistContacted() { saveJSON(KEY_CONTACTED, [...contacted]); }
 function persistNotes() { saveJSON(KEY_NOTES, notes); }
@@ -2527,7 +2527,6 @@ function renderNoteHistory(student) {
       if (!confirm('Delete this entry?')) return;
       notes[key] = (notes[key] || []).filter(n => n.id !== id);
       if (notes[key].length === 0) delete notes[key];
-      persistNotes();
       renderNoteHistory(state.modalStudent);
       renderActionGroups();
       renderYr12Groups(); renderYr11Groups();
@@ -2733,6 +2732,31 @@ function postToSheets(data) {
   }).catch(() => {}); // fail silently — don't disrupt the UI
 }
 
+/* === SHEETS SYNC === */
+async function loadNotesFromSheets() {
+  try {
+    const res = await fetch(sheetsUrl);
+    const rows = await res.json();
+    notes = {};
+    rows.forEach(row => {
+      if (!row.Student || !row.Year || !row.Form) return;
+      const key = `${row.Student}|${row.Year}|${row.Form}`;
+      if (!notes[key]) notes[key] = [];
+      notes[key].push({
+        id: 'sheet_' + new Date(row.Timestamp).getTime() + '_' + Math.random().toString(36).slice(2, 5),
+        teacher: row.Teacher || '',
+        subject: row.Subject || '',
+        target: row.Target || '',
+        actions: row.Actions ? row.Actions.split(', ').filter(Boolean) : [],
+        text: row.Notes || '',
+        timestamp: row.Timestamp ? new Date(row.Timestamp).getTime() : Date.now()
+      });
+    });
+  } catch(e) {
+    console.warn('Could not load entries from sheet — using local data.', e);
+  }
+}
+
 /* === EVENTS === */
 function wireEvents() {
   // House year filter tabs
@@ -2831,11 +2855,15 @@ function wireEvents() {
   });
 }
 
-function init() {
+async function init() {
   $('#snapshotDate').textContent = formatDate();
   $('#totalStudents').textContent = STUDENT_DATA.length;
   populateFilters();
   renderTeacherPill();
+  wireEvents();
+
+  await loadNotesFromSheets();
+
   renderActionSummary(); renderYr12Summary(); renderYr11Summary();
   renderActionGroups();
   renderYr12Groups(); renderYr11Groups();
@@ -2843,7 +2871,6 @@ function init() {
   renderOverview();
   updateTabCounts();
   renderPendingPanel();
-  wireEvents();
 
   if (!teacher.name && !teacher.subject) {
     setTimeout(() => openTeacherModal(), 400);
